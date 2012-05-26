@@ -1,0 +1,23 @@
+<dataConfig>
+    <dataSource driver="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost:3306/" user="stackoverflow" />
+    <document>
+        <entity name="post" transformer="RegexTransformer,HTMLStripTransformer" query="
+		SELECT 
+    			q.OwnerUserId as QuestionerId,
+    			q.Id as QuestionId,
+    			q.CreationDate as QuestionDate,
+    			q.Title as QuestionTitle,
+    			q.Body as QuestionBody,
+    			REPLACE(REPLACE(REPLACE(q.tags, '&gt;&lt;','|'), '&lt;',''), '&gt;','') as QuestionTags,
+    			a.OwnerUserId as AnswererId
+		FROM stackoverflow.posts q
+		LEFT JOIN stackoverflow.posts a ON q.AcceptedAnswerId = a.Id
+		WHERE q.PostTypeId=1
+		ORDER BY q.CreationDate desc
+		LIMIT 150000">
+		<field column="QuestionTags" sourceColName="QuestionTags" splitBy="\|" />
+		<field column="QuestionBody_s" sourceColName="QuestionBody" stripHTML="true" />
+        </entity>
+    </document>
+</dataConfig>
+
